@@ -20,7 +20,7 @@ const Dashboard = () => {
             <div className="card-body text-center">
               <h5 className="card-title">Make a Request</h5>
               <p className="card-text">Submit a request for services or assistance.</p>
-              <button className="btn btn-primary">+</button>
+              <button className="btn btn-primary">ADD</button>
             </div>
           </div>
         </div>
@@ -30,7 +30,7 @@ const Dashboard = () => {
             <div className="card-body text-center">
               <h5 className="card-title">Report an Incident</h5>
               <p className="card-text">Log an issue that needs immediate attention.</p>
-              <button className="btn btn-warning">+</button>
+              <button className="btn btn-warning">ADD</button>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@ const Dashboard = () => {
             <div className="card-body text-center">
               <h5 className="card-title">Report a Security Issue</h5>
               <p className="card-text">Notify us about any security vulnerabilities.</p>
-              <button className="btn btn-danger">+</button>
+              <button className="btn btn-danger">ADD</button>
             </div>
           </div>
         </div>
