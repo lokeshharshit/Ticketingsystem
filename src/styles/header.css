@@ -1,0 +1,21 @@
+/* Ensures the header spans the full width */
+.navbar {
+    width: 100vw; /* Full width of the viewport */
+    position: fixed; /* Fixes it at the top */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensures it's above other content */
+  }
+  
+  /* Adjusts body padding so content doesn't go under the fixed navbar */
+  body {
+    padding-top: 60px; /* Adjust based on navbar height */
+  }
+  
+  /* Makes sure content is not affected on smaller screens */
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 10px;
+    }
+  }
+  

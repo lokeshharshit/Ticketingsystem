@@ -1,0 +1,29 @@
+/* Ensures the footer spans the entire width */
+.footer-container {
+    width: 100%; /* Ensures full width */
+    position: fixed; /* Sticks to the bottom */
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .footer {
+    background-color: #343a40; /* Dark background */
+    color: white;
+    text-align: center;
+    padding: 15px 0; /* Proper padding */
+    width: 100%;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Ensures page covers full screen */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main-content {
+    flex: 1; /* Pushes footer to the bottom */
+  }
+  
