@@ -1,0 +1,48 @@
+# Ticketing System Application Documentation
+
+## User Interface (UI) Documentation
+
+### Overview
+The Ticketing System application provides a user-friendly interface for managing and tracking tickets. The UI is designed to be intuitive and easy to navigate, ensuring a seamless user experience.
+
+### Main Components
+1. **Dashboard**
+   - Displays an overview of ticket statistics, including the number of open, closed, and pending tickets.
+   - Provides quick access to recent activities and notifications.
+
+2. **Ticket List**
+   - Shows a list of all tickets with filtering and sorting options.
+   - Each ticket displays key information such as ticket ID, title, status, priority, and assigned user.
+
+3. **Ticket Details**
+   - Detailed view of a selected ticket.
+   - Includes ticket description, comments, attachments, and activity log.
+   - Allows users to update ticket status, add comments, and upload attachments.
+
+4. **Create Ticket**
+   - Form for creating a new ticket.
+   - Fields include title, description, priority, category, and assigned user.
+
+5. **User Profile**
+   - Displays user information and settings.
+   - Allows users to update their profile details and change their password.
+
+### Navigation
+- **Sidebar Menu**: Provides access to different sections of the application, including Dashboard, Ticket List, Create Ticket, and User Profile.
+- **Top Bar**: Displays the application logo, search bar, and user menu with options to log out and access profile settings.
+
+### Accessibility
+- The UI is designed to be accessible, with keyboard navigation and screen reader support.
+- High contrast mode and text resizing options are available for users with visual impairments.
+
+### Responsiveness
+- The application is fully responsive and works seamlessly on various devices, including desktops, tablets, and mobile phones.
+
+### Technologies Used
+- **Frontend Framework**: React.js
+- **Styling**: CSS, Bootstrap
+- **Icons**: FontAwesome
+
+### Future Enhancements
+- Implementing dark mode for better user experience in low-light environments.
+- Adding more customization options for users to personalize their dashboard.
