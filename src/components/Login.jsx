@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = ({ onLogin }) => {
@@ -8,22 +9,37 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+    setError(""); // Reset error state
+
+    if (!username.trim() || !password.trim()) {
+      setError("Username and Password are required");
+      return;
+    }
+
     try {
-      const response = await fetch("/users.json");
-      const users = await response.json();
+      const apiUrl = "https://ticketingsystemfc.azurewebsites.net/api/httptriggers?code=UV31N1uFcYsbPgouZlJSfd3xDpgZNVw8nUH3j9-1wm8AAzFus1tvrg%3D%3D";
 
-      const user = users.find(
-        (u) => u.username === username && u.password === password
-      );
+      const response = await axios.post(apiUrl, {
+        UserName: username,
+        PasswordHash: password, // Send password as plaintext (hashing should be handled in the backend)
+        Login: true,
+      });
 
-      if (user) {
-        onLogin(user);
-      } else {
-        setError("Invalid username or password");
+      if (response.status === 200) {
+        onLogin(response.data); // Successful login
       }
     } catch (err) {
-      setError("Error loading user data");
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError("Invalid password");
+        } else if (err.response.status === 404) {
+          setError("User not found");
+        } else {
+          setError("Server error. Please try again.");
+        }
+      } else {
+        setError("Error connecting to the server");
+      }
     }
   };
 
