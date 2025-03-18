@@ -1,51 +1,85 @@
-import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../styles/dashboard.css"; // Ensure correct path
+import React, { useState, useEffect } from "react";
+import "../styles/dashboard.css"; // Ensure correct styles
+import AddForm from "./AddForm";
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  useEffect(() => {
+    document.body.classList.add("dashboard-page");
+    return () => {
+      document.body.classList.remove("dashboard-page");
+    };
+  }, []);
+
+  // Service Categories Data
+  const categories = [
+    {
+      name: "Accounts & Access",
+      description: "Click here to raise an accounts or access request.",
+      icon: "🔑",
+    },
+    {
+      name: "Hardware",
+      description: "Click here to raise a hardware request.",
+      icon: "💻",
+    },
+    {
+      name: "Software",
+      description: "Click here to raise a software request for install or purchase.",
+      icon: "📦",
+    },
+    {
+      name: "Other Service Requests",
+      description: "Click here to raise all other requests including a service request.",
+      icon: "❓",
+    },
+  ];
+
   return (
-    <div className="dashboard-container">
-      <div className="row justify-content-center mb-4">
-        <div className="col-md-6">
-          <input 
-            type="text" 
-            className="form-control" 
-            placeholder="Search..." 
-          />
+    <main className="dashboard-main">
+      <div className="dashboard-container">
+        {!selectedCategory ? (
+          <>
+            <h2 id="dashboard-title" className="text-center">
+              Service Categories
+            </h2>
+            <div className="search-container">
+              <input
+                type="text"
+                className="search-box"
+                placeholder="Search..."
+              />
+            </div>
+            <div className="categories-grid">
+              {categories.map((category, index) => (
+                <div
+                  key={index}
+                  className="category-card"
+                  onClick={() => setSelectedCategory(category.name)}
+                >
+                  <div className="category-icon">{category.icon}</div>
+                  <h5>{category.name}</h5>
+                  <p>{category.description}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="add-form-wrapper">
+            <AddForm
+              category={selectedCategory}
+              onBack={() => setSelectedCategory(null)}
+              user={user}
+            />
+          </div>
+        )}
+        <div id="dashboard-other-options" className="other-options">
+          <h3>Other Dashboard Features</h3>
+          <p>This is where other dashboard functionalities remain.</p>
         </div>
       </div>
-      <div className="row justify-content-center">
-        <div className="col-md-4">
-          <div className="card option-card">
-            <div className="card-body text-center">
-              <h5 className="card-title">Make a Request</h5>
-              <p className="card-text">Submit a request for services or assistance.</p>
-              <button className="btn btn-primary">ADD</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card option-card">
-            <div className="card-body text-center">
-              <h5 className="card-title">Report an Incident</h5>
-              <p className="card-text">Log an issue that needs immediate attention.</p>
-              <button className="btn btn-warning">ADD</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card option-card">
-            <div className="card-body text-center">
-              <h5 className="card-title">Report a Security Issue</h5>
-              <p className="card-text">Notify us about any security vulnerabilities.</p>
-              <button className="btn btn-danger">ADD</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 };
 

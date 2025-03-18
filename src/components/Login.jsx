@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react";
+import "../styles/login.css"; // Import the custom CSS file
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    document.body.classList.add("login-page");
+    return () => {
+      document.body.classList.remove("login-page");
+    };
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch("/users.json");
       const users = await response.json();
@@ -28,39 +35,37 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card shadow-lg p-4" style={{ width: "400px" }}>
-        <h3 className="text-center mb-4">Login</h3>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label className="form-label">Username</label>
+    <main>
+      <div className="login-container">
+        <h3><b>Login</b></h3>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="input-group">
+            <label>Username</label>
             <input
               type="text"
-              className="form-control"
               placeholder="Enter username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
-          <div className="mb-3">
-            <label className="form-label">Password</label>
+          <div className="input-group">
+            <label>Password</label>
             <input
               type="password"
-              className="form-control"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">
+          <button type="submit" className="login-button">
             Login
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 };
 
