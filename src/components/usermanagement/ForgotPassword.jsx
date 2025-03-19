@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import "../../styles/forgotpassword.css";
 
 const ForgotPassword = ({ setShowForgotPassword }) => {
   const [email, setEmail] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Auto-focus on email input field
+  }, []);
 
   const handleReset = (e) => {
     e.preventDefault();
@@ -20,6 +26,7 @@ const ForgotPassword = ({ setShowForgotPassword }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            ref={inputRef} // Added ref to focus input
           />
         </div>
         <button type="submit" className="forgot-password-button">
