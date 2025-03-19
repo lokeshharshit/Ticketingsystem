@@ -25,7 +25,7 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
 
     try {
       const apiUrl =
-        "https://ticketingsystemfc.azurewebsites.net/api/httptriggers?code=UV31N1uFcYsbPgouZlJSfd3xDpgZNVw8nUH3j9-1wm8AAzFus1tvrg%3D%3D";
+        "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/HttpTriggers";
 
       const response = await axios.post(apiUrl, {
         UserName: username,

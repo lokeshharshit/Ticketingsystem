@@ -3,7 +3,7 @@ import "../styles/addForm.css";
 
 const AddForm = ({ category, onBack, user }) => {
   const [formData, setFormData] = useState({
-    requestorName: user?.username || "Shaik Mulla",
+    requestorName: user?.username || "",
     summary: "",
     details: "",
     attachments: null,
