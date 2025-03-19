@@ -47,7 +47,7 @@ const AddForm = ({ category, onBack, user }) => {
             {/* User Information */}
             <div>
                 <div className="requestor-text">
-                    {user?.username?.toUpperCase() || "N/A"} (WinWire)
+                    {user?.UserName?.toUpperCase() || "N/A"} (WinWire)
                 </div>
                 <div className="requestor-info">
                     WinWire Employee - Full Time
