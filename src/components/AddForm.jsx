@@ -25,7 +25,10 @@ const AddForm = ({ category, onBack, user }) => {
 
   return (
     <div className="add-form-container">
-      <h2 className="form-title">Account Unlock / Password Reset</h2>
+      {/* <h2 className="form-title">Account Unlock / Password Reset</h2> */}
+      <h3 className="form-title">
+        {category ? `${category} Request Form` : "Request Form"}
+      </h3>
       <p className="form-subtitle">
         Click here to request account unlocks or password resets.
       </p>

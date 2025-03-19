@@ -30,7 +30,7 @@ const Dashboard = ({ user }) => {
       icon: "📦",
     },
     {
-      name: "Other Service Requests",
+      name: "Other Services",
       description: "Click here to raise all other requests including a service request.",
       icon: "❓",
     },

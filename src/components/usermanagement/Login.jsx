@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "../styles/login.css"; // Import the custom CSS file
+import "../../styles/login.css"; // Updated path after moving files
+import axios from "axios";
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, setShowForgotPassword }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,29 +16,47 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!username.trim() || !password.trim()) {
+      setError("Username and Password are required");
+      return;
+    }
 
     try {
-      const response = await fetch("/users.json");
-      const users = await response.json();
+      const apiUrl =
+        "https://ticketingsystemfc.azurewebsites.net/api/httptriggers?code=UV31N1uFcYsbPgouZlJSfd3xDpgZNVw8nUH3j9-1wm8AAzFus1tvrg%3D%3D";
 
-      const user = users.find(
-        (u) => u.username === username && u.password === password
-      );
+      const response = await axios.post(apiUrl, {
+        UserName: username,
+        PasswordHash: password,
+        Login: true,
+      });
 
-      if (user) {
-        onLogin(user);
-      } else {
-        setError("Invalid username or password");
+      if (response.status === 200) {
+        onLogin(response.data);
       }
     } catch (err) {
-      setError("Error loading user data");
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError("Invalid password");
+        } else if (err.response.status === 404) {
+          setError("User not found");
+        } else {
+          setError("Server error. Please try again.");
+        }
+      } else {
+        setError("Error connecting to the server");
+      }
     }
   };
 
   return (
     <main>
       <div className="login-container">
-        <h3><b>Login</b></h3>
+        <h3>
+          <b>Login</b>
+        </h3>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
@@ -59,6 +78,14 @@ const Login = ({ onLogin }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {/* Forgot Password Link */}
+            <a
+              href="#"
+              className="forgot-password"
+              onClick={() => setShowForgotPassword(true)}
+            >
+              Forgot Password?
+            </a>
           </div>
           <button type="submit" className="login-button">
             Login

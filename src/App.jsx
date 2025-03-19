@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Login from "./components/Login";
+import Login from "./components/usermanagement/Login";
+import ForgotPassword from "./components/usermanagement/ForgotPassword";
 import Dashboard from "./components/Dashboard";
 import ServiceCategories from "./components/ServiceCategories";
 import AddForm from "./components/AddForm";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   return (
     <Router>
@@ -18,18 +20,25 @@ const App = () => {
 
         <main>
           <Routes>
-            {/* Show Dashboard if logged in, otherwise redirect to Login */}
-            <Route
-              path="/"
-              element={user ? <Dashboard user={user} /> : <Login onLogin={setUser} />}
-            />
-            
+            {/* Show Forgot Password Page */}
+            {showForgotPassword ? (
+              <Route
+                path="/"
+                element={<ForgotPassword setShowForgotPassword={setShowForgotPassword} />}
+              />
+            ) : (
+              <Route
+                path="/"
+                element={user ? <Dashboard user={user} /> : <Login onLogin={setUser} setShowForgotPassword={setShowForgotPassword} />}
+              />
+            )}
+
             {/* Service Categories Route */}
             <Route
               path="/service-categories"
               element={user ? <ServiceCategories /> : <Navigate to="/" />}
             />
-            
+
             {/* AddForm with category and user */}
             <Route
               path="/add/:category"

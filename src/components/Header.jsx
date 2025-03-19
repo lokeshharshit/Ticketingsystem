@@ -18,9 +18,9 @@ const Header = ({ user, onLogout }) => {
                 onMouseLeave={() => setIsHovered(false)}
               >
                 <div className="profile-icon">
-                  {user.username.charAt(0).toUpperCase()}
+                  {user.UserName.charAt(0).toUpperCase()}
                 </div>
-                {isHovered && <span className="hover-username">{user.username}</span>}
+                {isHovered && <span className="hover-username">{user.UserName}</span>}
               </li>
               <li className="nav-item">
                 <button className="logout-button" onClick={onLogout}>

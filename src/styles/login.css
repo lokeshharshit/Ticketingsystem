@@ -108,3 +108,32 @@ input[type="password"]:focus {
 .login-button:hover {
   background-color: #1b082f;
 }
+
+.link-container {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: #0056b3;
+}
+
+.forgot-password {
+  font-size: 12px; /* Decrease font size */
+  text-align: right; /* Align to the right */
+  display: block; /* Ensures it takes full width */
+  margin-top: 5px; /* Optional spacing */
+  color: #007bff; /* Optional: Change link color */
+  text-decoration: none; /* Optional: Remove underline */
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
