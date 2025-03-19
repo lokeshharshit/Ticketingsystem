@@ -1,0 +1,178 @@
+/* Main Container - Dynamic Full Width */
+.add-form-container {
+  margin: 0 auto; /* Remove top space and center horizontally */
+  padding: 40px;
+  width: 90%;
+  max-width: 800px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+
+/* Form Title */
+.form-title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+/* Subtitle */
+.form-subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Label */
+.form-label {
+  font-weight: bold;
+  color: #555;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Form Inputs and Textarea */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fdfdfd;
+}
+
+/* Textarea Height */
+textarea.form-control {
+  height: 150px;
+}
+
+/* Requestor Name Layout */
+.requestor-container {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Icon for Requestor */
+.requestor-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* Requestor Text */
+.requestor-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Additional Info */
+.requestor-info {
+  font-size: 12px;
+  color: #777;
+}
+
+/* Attachments Styling */
+.file-input {
+  padding: 8px;
+}
+
+/* Buttons at Bottom */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Button Styling */
+.btn {
+  width: 48%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Submit Button */
+.submit-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.submit-btn:hover {
+  background-color: #218838;
+}
+
+/* Back Button */
+.back-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+}
+
+.back-btn:hover {
+  background-color: #5a6268;
+}
+
+/* Mandatory Field Notice */
+.mandatory-notice {
+  text-align: right;
+  color: red;
+  font-size: 12px;
+  margin-top: -15px;
+  margin-bottom: 10px;
+}
+
+/* Full Width for Large Screens */
+@media (min-width: 1200px) {
+  .add-form-container {
+    width: 75%;
+  }
+}
+
+/* Responsive Design for Small Screens */
+@media (max-width: 768px) {
+  .add-form-container {
+    width: 95%;
+    margin-top: 120px;
+    padding: 20px;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Fix Form Below Header */
+body {
+  padding-top: 80px; /* Pushes content below header */
+  background-color: #f5f5f5;
+}

@@ -1,5 +1,5 @@
 [
-    { "username": "admin1", "password": "admin123", "role": "admin" },
+    { "username": "Partha", "password": "admin123", "role": "admin" },
     { "username": "admin2", "password": "admin456", "role": "admin" },
     { "username": "user1", "password": "user123", "role": "user" },
     { "username": "user2", "password": "user456", "role": "user" },
@@ -7,7 +7,7 @@
     { "username": "it2", "password": "it456", "role": "IT team" },
     { "username": "moderator1", "password": "mod123", "role": "moderator" },
     { "username": "moderator2", "password": "mod456", "role": "moderator" },
-    { "username": "guest1", "password": "guest123", "role": "guest" },
-    { "username": "guest2", "password": "guest456", "role": "guest" }
+    { "username": "AmanAbdul", "password": "guest123", "role": "guest" },
+    { "username": "Lokesh", "password": "guest456", "role": "guest" }
   ]
   

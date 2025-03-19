@@ -1,10 +1,10 @@
 import React from "react";
-import '../styles/footer.css'
+import "../styles/footer.css"; // Ensure correct path
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-light text-center py-3 w-100 mt-auto">
-      <p className="mb-0">© {new Date().getFullYear()} MyApp. All rights reserved.</p>
+    <footer className="footer">
+      © 2025 Your Company. All rights reserved.
     </footer>
   );
 };
