@@ -1,15 +1,13 @@
-/* Main Container - Dynamic Full Width */
+/* Main Form Container */
 .add-form-container {
-  margin: 0 auto; /* Remove top space and center horizontally */
+  margin: 0 auto;
   padding: 40px;
   width: 90%;
   max-width: 800px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
 }
-
 
 /* Form Title */
 .form-title {
@@ -20,20 +18,12 @@
   font-weight: bold;
 }
 
-/* Subtitle */
-.form-subtitle {
-  text-align: center;
-  color: #777;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
 /* Form Group */
 .form-group {
   margin-bottom: 20px;
 }
 
-/* Label */
+/* Form Label */
 .form-label {
   font-weight: bold;
   color: #555;
@@ -41,7 +31,7 @@
   margin-bottom: 8px;
 }
 
-/* Form Inputs and Textarea */
+/* Input Fields */
 .form-control {
   width: 100%;
   padding: 12px;
@@ -51,61 +41,88 @@
   background-color: #fdfdfd;
 }
 
-/* Textarea Height */
+/* Textarea */
 textarea.form-control {
   height: 150px;
 }
 
-/* Requestor Name Layout */
-.requestor-container {
+/* 📌 File Input Container */
+.file-input-container {
   display: flex;
-  align-items: center;
-  background: #f0f0f0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  background-color: #fdfdfd;
+  min-height: 45px;
+  position: relative;
+  width: 100%;
 }
 
-/* Icon for Requestor */
-.requestor-icon {
-  width: 40px;
-  height: 40px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 50%;
+/* Custom File Input Button */
+.custom-file-input {
+  display: inline-block;
+  padding: 10px 15px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+
+/* Hidden File Input */
+.file-input-container input[type="file"] {
+  display: none;
+}
+
+/* Selected Files Display */
+.selected-files {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  margin-right: 10px;
-}
-
-/* Requestor Text */
-.requestor-text {
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: 14px;
-  font-weight: bold;
   color: #333;
+  overflow-x: auto;
+  width: 100%;
 }
 
-/* Additional Info */
-.requestor-info {
-  font-size: 12px;
-  color: #777;
+/* Individual File Name */
+.file-name {
+  display: flex;
+  align-items: center;
+  background: #f1f1f1;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  white-space: nowrap;
+  margin-right: 5px;
 }
 
-/* Attachments Styling */
-.file-input {
-  padding: 8px;
+/* Remove File Button (Just an "X", no border or background) */
+.remove-file {
+  cursor: pointer;
+  color: red;
+  font-size: 14px;
+  margin-left: 6px;
+  background: none;
+  padding: 0;
 }
 
-/* Buttons at Bottom */
+.remove-file:hover {
+  color: darkred;
+}
+
+/* Buttons */
 .form-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
-/* Button Styling */
 .btn {
   width: 48%;
   padding: 12px;
@@ -137,27 +154,10 @@ textarea.form-control {
   background-color: #5a6268;
 }
 
-/* Mandatory Field Notice */
-.mandatory-notice {
-  text-align: right;
-  color: red;
-  font-size: 12px;
-  margin-top: -15px;
-  margin-bottom: 10px;
-}
-
-/* Full Width for Large Screens */
-@media (min-width: 1200px) {
-  .add-form-container {
-    width: 75%;
-  }
-}
-
-/* Responsive Design for Small Screens */
+/* Responsive */
 @media (max-width: 768px) {
   .add-form-container {
     width: 95%;
-    margin-top: 120px;
     padding: 20px;
   }
 
@@ -171,37 +171,17 @@ textarea.form-control {
   }
 }
 
-/* Fix Form Below Header */
-body {
-  padding-top: 80px; /* Pushes content below header */
-  background-color: #f5f5f5;
+.file-input-default {
+  all: unset; /* Resets all styles */
 }
 
-.file-input-container {
-  position: relative;
-  display: inline-block;
-  width: 100%;
+.file-input-default::-webkit-file-upload-button {
+  all: unset;
 }
 
-.file-input {
-  width: 100%;
-  padding-right: 30px; /* Space for ❌ */
-}
-
-.remove-file {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+.file-input-default {
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
-  color: red;
-  font-size: 16px;
-  font-weight: bold;
-  background: white;
-  padding: 2px 5px;
-  border-radius: 50%;
 }
 
-.remove-file:hover {
-  color: darkred;
-}

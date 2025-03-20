@@ -6,7 +6,7 @@ const AddForm = ({ category, onBack, user }) => {
   const [formData, setFormData] = useState({
     description: "",
     comments: "",
-    attachment: null,
+    attachments: [],
   });
 
   const [loading, setLoading] = useState(false);
@@ -16,43 +16,52 @@ const AddForm = ({ category, onBack, user }) => {
   const sasToken = "sv=2024-11-04&ss=bfqt&srt=co&sp=rwdlacupiyx&se=2025-04-20T15:28:36Z&st=2025-03-19T07:28:36Z&spr=https,http&sig=G2q4%2BGr3XGUGKb%2Ba0FL9C5MhlEtlv8Z%2BOn2hrIJPVdA%3D";
   const blobStorageUrl = "https://ticketingsystemfctickets.blob.core.windows.net/ticketingsystemfccontainer";
 
+  // ✅ Handle Multiple File Selection
   const handleFileChange = (e) => {
     const { files } = e.target;
     if (files.length > 0) {
-      setFormData({ ...formData, attachment: files[0] });
+      setFormData({ ...formData, attachments: [...files] });
     }
   };
 
-  const handleRemoveAttachment = () => {
-    setFormData({ ...formData, attachment: null });
-    document.getElementById("fileInput").value = "";
+  // ✅ Remove Selected File
+  const handleRemoveAttachment = (index) => {
+    const updatedFiles = [...formData.attachments];
+    updatedFiles.splice(index, 1);
+    setFormData({ ...formData, attachments: updatedFiles });
   };
 
-  const handleFileUpload = async (file) => {
-    if (!file) return null;
+  // ✅ Upload Multiple Files to Azure Blob Storage
+  const handleFileUpload = async (files) => {
+    if (!files.length) return null;
 
-    const blobName = `${Date.now()}-${file.name}`;
-    const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
+    let uploadedUrls = [];
+    for (let file of files) {
+      const blobName = `${Date.now()}-${file.name}`;
+      const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
 
-    try {
-      const response = await axios.put(uploadUrl, file, {
-        headers: {
-          "x-ms-blob-type": "BlockBlob",
-          "Content-Type": file.type,
-        },
-      });
+      try {
+        const response = await axios.put(uploadUrl, file, {
+          headers: {
+            "x-ms-blob-type": "BlockBlob",
+            "Content-Type": file.type,
+          },
+        });
 
-      if (response.status === 201) {
-        return `${blobStorageUrl}/${blobName}?${sasToken}`;
-      } else {
-        throw new Error("File upload failed");
+        if (response.status === 201) {
+          uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
+        } else {
+          console.error("File upload failed:", file.name);
+        }
+      } catch (error) {
+        console.error("Blob Upload Error:", error);
       }
-    } catch (error) {
-      console.error("Blob Upload Error:", error);
-      return null;
     }
+
+    return uploadedUrls.length > 0 ? uploadedUrls.join(";") : null;
   };
 
+  // ✅ Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,10 +73,7 @@ const AddForm = ({ category, onBack, user }) => {
       return;
     }
 
-    let attachmentUrl = null;
-    if (formData.attachment) {
-      attachmentUrl = await handleFileUpload(formData.attachment);
-    }
+    let attachmentUrls = await handleFileUpload(formData.attachments);
 
     const ticketData = {
       UserId: user?.UserId,
@@ -75,7 +81,7 @@ const AddForm = ({ category, onBack, user }) => {
       Description: formData.description,
       Status: "Open",
       Comments: formData.comments,
-      Attachment: attachmentUrl,
+      Attachment: attachmentUrls,
     };
 
     try {
@@ -85,7 +91,7 @@ const AddForm = ({ category, onBack, user }) => {
 
       if (response.status >= 200 && response.status < 300) {
         setMessage("Ticket submitted successfully!");
-        setFormData({ description: "", comments: "", attachment: null });
+        setFormData({ description: "", comments: "", attachments: [] });
       }
     } catch (error) {
       setMessage("Failed to submit ticket. Please check API request.");
@@ -135,19 +141,40 @@ const AddForm = ({ category, onBack, user }) => {
           />
         </div>
 
+        {/* ✅ File Upload Field with "Choose Files" UI */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
           <div className="file-input-container">
-            <input
-              type="file"
-              id="fileInput"
-              name="attachment"
-              className="form-control file-input"
-              onChange={handleFileChange}
-            />
-            {formData.attachment && (
-              <span className="remove-file" onClick={handleRemoveAttachment}>❌</span>
-            )}
+            <label className="custom-file-input">
+              Choose Files
+              <input
+                type="file"
+                multiple
+                className="file-input-default"
+                onChange={handleFileChange}
+              />
+
+            </label>
+
+            {/* Selected Files Display */}
+            <div className="selected-files">
+              {formData.attachments.length > 0
+                ? formData.attachments.map((file, index) => (
+                    <span key={index} className="file-name">
+                      {file.name}
+                      <span
+                        className="remove-file"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveAttachment(index);
+                        }}
+                      >
+                        ❌
+                      </span>
+                    </span>
+                  ))
+                : "No files selected"}
+            </div>
           </div>
         </div>
 
