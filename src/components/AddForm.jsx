@@ -27,11 +27,14 @@ const AddForm = ({ category, onBack, user }) => {
     setFormData({ ...formData, attachments: updatedFiles });
   };
 
-  const uploadFilesToAzure = async (files) => {
+  const uploadFilesToAzure = async () => {
+    if (formData.attachments.length === 0) return null; // Return null if no files are attached
+
     let uploadedUrls = [];
-    for (const file of files) {
+    for (const file of formData.attachments) {
       const blobName = `${Date.now()}-${file.name}`;
       const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
+
       try {
         await axios.put(uploadUrl, file, {
           headers: {
@@ -39,13 +42,15 @@ const AddForm = ({ category, onBack, user }) => {
             "Content-Type": file.type,
           },
         });
+
         uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
       } catch (error) {
-        console.error("File upload failed", error);
+        console.error("File upload failed:", error);
         throw new Error("File upload failed");
       }
     }
-    return uploadedUrls;
+
+    return uploadedUrls.length > 0 ? uploadedUrls.join(";") : null;
   };
 
   const handleSubmit = async (e) => {
@@ -59,30 +64,22 @@ const AddForm = ({ category, onBack, user }) => {
       return;
     }
 
-    let attachmentUrls = [];
-    if (formData.attachments.length > 0) {
-      try {
-        attachmentUrls = await uploadFilesToAzure(formData.attachments);
-      } catch (error) {
-        setMessage("Failed to upload files. Please try again.");
-        setLoading(false);
-        return;
-      }
-    }
-
-    const ticketData = {
-      UserId: user?.UserId,
-      AdminId: 1,
-      Description: formData.description,
-      Status: "Open",
-      Comments: formData.comments,
-      Attachment: attachmentUrls.join(";"),
-    };
-
     try {
+      let attachmentUrls = await uploadFilesToAzure();
+
+      const ticketData = {
+        UserId: user?.UserId,
+        AdminId: 1,
+        Description: formData.description,
+        Status: "Open",
+        Comments: formData.comments,
+        Attachment: attachmentUrls, // Pass null if no files are uploaded
+      };
+
       const response = await axios.post(apiUrl, ticketData, {
         headers: { "Content-Type": "application/json" },
       });
+
       if (response.status >= 200 && response.status < 300) {
         setMessage("Ticket submitted successfully!");
         setFormData({ description: "", comments: "", attachments: [] });
@@ -98,7 +95,7 @@ const AddForm = ({ category, onBack, user }) => {
     <div className="add-form-container">
       <h3 className="form-title">{category ? `${category} Request Form` : "Request Form"}</h3>
       {message && <p className="message">{message}</p>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Requestor *</label>
@@ -137,11 +134,13 @@ const AddForm = ({ category, onBack, user }) => {
           />
         </div>
 
+        {/* Attachments */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
           <div className="file-upload-box">
             <input type="file" multiple className="file-input" onChange={handleFileChange} />
           </div>
+
           {formData.attachments.length > 0 && (
             <ul className="selected-files">
               {formData.attachments.map((file, index) => (
@@ -156,7 +155,9 @@ const AddForm = ({ category, onBack, user }) => {
 
         <div className="form-buttons">
           <button type="button" className="btn btn-secondary back-btn" onClick={onBack}>← Back</button>
-          <button type="submit" className="btn btn-success submit-btn" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
+          <button type="submit" className="btn btn-success submit-btn" disabled={loading}>
+            {loading ? "Submitting..." : "Submit"}
+          </button>
         </div>
       </form>
     </div>
