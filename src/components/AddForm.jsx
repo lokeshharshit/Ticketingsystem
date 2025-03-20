@@ -16,48 +16,17 @@ const AddForm = ({ category, onBack, user }) => {
   const sasToken = "sv=2024-11-04&ss=bfqt&srt=co&sp=rwdlacupiyx&se=2025-04-20T15:28:36Z&st=2025-03-19T07:28:36Z&spr=https,http&sig=G2q4%2BGr3XGUGKb%2Ba0FL9C5MhlEtlv8Z%2BOn2hrIJPVdA%3D";
   const blobStorageUrl = "https://ticketingsystemfctickets.blob.core.windows.net/ticketingsystemfccontainer";
 
-  // Handle Multiple File Selection
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
-    const existingFiles = formData.attachments.map((file) => file.name);
-    const filteredFiles = newFiles.filter((file) => !existingFiles.includes(file.name));
-    setFormData({ ...formData, attachments: [...formData.attachments, ...filteredFiles] });
+    setFormData({ ...formData, attachments: [...formData.attachments, ...newFiles] });
   };
 
-  // Remove Selected File
   const handleRemoveAttachment = (index) => {
     const updatedFiles = [...formData.attachments];
     updatedFiles.splice(index, 1);
     setFormData({ ...formData, attachments: updatedFiles });
   };
 
-  // Upload Multiple Files to Azure Blob Storage
-  const handleFileUpload = async (files) => {
-    if (!files.length) return null;
-    let uploadedUrls = [];
-    for (let file of files) {
-      const blobName = `${Date.now()}-${file.name}`;
-      const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
-      try {
-        const response = await axios.put(uploadUrl, file, {
-          headers: {
-            "x-ms-blob-type": "BlockBlob",
-            "Content-Type": file.type,
-          },
-        });
-        if (response.status === 201) {
-          uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
-        } else {
-          setMessage(`Failed to upload ${file.name}`);
-        }
-      } catch (error) {
-        setMessage(`Error uploading ${file.name}`);
-      }
-    }
-    return uploadedUrls.length > 0 ? uploadedUrls.join(";") : null;
-  };
-
-  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -69,7 +38,11 @@ const AddForm = ({ category, onBack, user }) => {
       return;
     }
 
-    let attachmentUrls = await handleFileUpload(formData.attachments);
+    let attachmentUrls = null; // Placeholder for file URLs
+    if (formData.attachments.length > 0) {
+      attachmentUrls = formData.attachments.map((file) => URL.createObjectURL(file)).join(";");
+    }
+
     const ticketData = {
       UserId: user?.UserId,
       AdminId: 1,
@@ -96,15 +69,23 @@ const AddForm = ({ category, onBack, user }) => {
 
   return (
     <div className="add-form-container">
-      <h3 className="form-title">
-        {category ? `${category} Request Form` : "Request Form"}
-      </h3>
+      <h3 className="form-title">{category ? `${category} Request Form` : "Request Form"}</h3>
       {message && <p className="message">{message}</p>}
+      
       <form onSubmit={handleSubmit}>
+        {/* Requestor Field */}
         <div className="form-group">
           <label className="form-label">Requestor *</label>
-          <input type="text" value={user?.UserName || "N/A"} disabled className="form-control" />
+          <div className="requestor-container">
+            <div className="requestor-icon">{user?.UserName?.charAt(0).toUpperCase()}</div>
+            <div>
+              <div className="requestor-text">{user?.UserName?.toUpperCase() || "N/A"} (WinWire)</div>
+              <div className="requestor-info">WinWire Employee - Full Time</div>
+            </div>
+          </div>
         </div>
+
+        {/* Summary */}
         <div className="form-group">
           <label className="form-label">Summary *</label>
           <input
@@ -117,6 +98,8 @@ const AddForm = ({ category, onBack, user }) => {
             required
           />
         </div>
+
+        {/* Details */}
         <div className="form-group">
           <label className="form-label">Details *</label>
           <textarea
@@ -129,18 +112,12 @@ const AddForm = ({ category, onBack, user }) => {
             required
           />
         </div>
+
+        {/* Attachments - Styled Like a Form Input */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
-          <div className="file-input-box">
-            <label className="custom-file-input">
-              Choose Files
-              <input
-                type="file"
-                multiple
-                className="file-input-default"
-                onChange={handleFileChange}
-              />
-            </label>
+          <div className="file-upload-box">
+            <input type="file" multiple className="file-input" onChange={handleFileChange} />
           </div>
           {formData.attachments.length > 0 && (
             <ul className="selected-files">
@@ -153,6 +130,8 @@ const AddForm = ({ category, onBack, user }) => {
             </ul>
           )}
         </div>
+
+        {/* Buttons */}
         <div className="form-buttons">
           <button type="button" className="btn btn-secondary back-btn" onClick={onBack}>← Back</button>
           <button type="submit" className="btn btn-success submit-btn" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
