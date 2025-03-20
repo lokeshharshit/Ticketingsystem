@@ -1,6 +1,4 @@
-/* ========================= */
-/* General Form Styling */
-/* ========================= */
+
 .add-form-container {
   margin: 0 auto;
   padding: 30px;
@@ -46,9 +44,6 @@ textarea.form-control {
   height: 120px;
 }
 
-/* ========================= */
-/* File Upload Styling */
-/* ========================= */
 
 .file-input-box {
   display: flex;
@@ -113,9 +108,6 @@ textarea.form-control {
   width: 100%;
 }
 
-/* ========================= */
-/* Buttons */
-/* ========================= */
 .form-buttons {
   display: flex;
   justify-content: space-between;
