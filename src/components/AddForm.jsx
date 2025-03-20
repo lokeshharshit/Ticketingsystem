@@ -16,30 +16,28 @@ const AddForm = ({ category, onBack, user }) => {
   const sasToken = "sv=2024-11-04&ss=bfqt&srt=co&sp=rwdlacupiyx&se=2025-04-20T15:28:36Z&st=2025-03-19T07:28:36Z&spr=https,http&sig=G2q4%2BGr3XGUGKb%2Ba0FL9C5MhlEtlv8Z%2BOn2hrIJPVdA%3D";
   const blobStorageUrl = "https://ticketingsystemfctickets.blob.core.windows.net/ticketingsystemfccontainer";
 
-  // ✅ Handle Multiple File Selection
+  // Handle Multiple File Selection
   const handleFileChange = (e) => {
-    const { files } = e.target;
-    if (files.length > 0) {
-      setFormData({ ...formData, attachments: [...files] });
-    }
+    const newFiles = Array.from(e.target.files);
+    const existingFiles = formData.attachments.map((file) => file.name);
+    const filteredFiles = newFiles.filter((file) => !existingFiles.includes(file.name));
+    setFormData({ ...formData, attachments: [...formData.attachments, ...filteredFiles] });
   };
 
-  // ✅ Remove Selected File
+  // Remove Selected File
   const handleRemoveAttachment = (index) => {
     const updatedFiles = [...formData.attachments];
     updatedFiles.splice(index, 1);
     setFormData({ ...formData, attachments: updatedFiles });
   };
 
-  // ✅ Upload Multiple Files to Azure Blob Storage
+  // Upload Multiple Files to Azure Blob Storage
   const handleFileUpload = async (files) => {
     if (!files.length) return null;
-
     let uploadedUrls = [];
     for (let file of files) {
       const blobName = `${Date.now()}-${file.name}`;
       const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
-
       try {
         const response = await axios.put(uploadUrl, file, {
           headers: {
@@ -47,21 +45,19 @@ const AddForm = ({ category, onBack, user }) => {
             "Content-Type": file.type,
           },
         });
-
         if (response.status === 201) {
           uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
         } else {
-          console.error("File upload failed:", file.name);
+          setMessage(`Failed to upload ${file.name}`);
         }
       } catch (error) {
-        console.error("Blob Upload Error:", error);
+        setMessage(`Error uploading ${file.name}`);
       }
     }
-
     return uploadedUrls.length > 0 ? uploadedUrls.join(";") : null;
   };
 
-  // ✅ Handle Form Submission
+  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,7 +70,6 @@ const AddForm = ({ category, onBack, user }) => {
     }
 
     let attachmentUrls = await handleFileUpload(formData.attachments);
-
     const ticketData = {
       UserId: user?.UserId,
       AdminId: 1,
@@ -88,14 +83,12 @@ const AddForm = ({ category, onBack, user }) => {
       const response = await axios.post(apiUrl, ticketData, {
         headers: { "Content-Type": "application/json" },
       });
-
       if (response.status >= 200 && response.status < 300) {
         setMessage("Ticket submitted successfully!");
         setFormData({ description: "", comments: "", attachments: [] });
       }
     } catch (error) {
       setMessage("Failed to submit ticket. Please check API request.");
-      console.error("API Error:", error.response ? error.response.data : error.message);
     } finally {
       setLoading(false);
     }
@@ -106,15 +99,12 @@ const AddForm = ({ category, onBack, user }) => {
       <h3 className="form-title">
         {category ? `${category} Request Form` : "Request Form"}
       </h3>
-
       {message && <p className="message">{message}</p>}
-
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Requestor *</label>
           <input type="text" value={user?.UserName || "N/A"} disabled className="form-control" />
         </div>
-
         <div className="form-group">
           <label className="form-label">Summary *</label>
           <input
@@ -127,7 +117,6 @@ const AddForm = ({ category, onBack, user }) => {
             required
           />
         </div>
-
         <div className="form-group">
           <label className="form-label">Details *</label>
           <textarea
@@ -140,11 +129,9 @@ const AddForm = ({ category, onBack, user }) => {
             required
           />
         </div>
-
-        {/* ✅ File Upload Field with "Choose Files" UI */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
-          <div className="file-input-container">
+          <div className="file-input-box">
             <label className="custom-file-input">
               Choose Files
               <input
@@ -153,31 +140,19 @@ const AddForm = ({ category, onBack, user }) => {
                 className="file-input-default"
                 onChange={handleFileChange}
               />
-
             </label>
-
-            {/* Selected Files Display */}
-            <div className="selected-files">
-              {formData.attachments.length > 0
-                ? formData.attachments.map((file, index) => (
-                    <span key={index} className="file-name">
-                      {file.name}
-                      <span
-                        className="remove-file"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveAttachment(index);
-                        }}
-                      >
-                        ❌
-                      </span>
-                    </span>
-                  ))
-                : "No files selected"}
-            </div>
           </div>
+          {formData.attachments.length > 0 && (
+            <ul className="selected-files">
+              {formData.attachments.map((file, index) => (
+                <li key={index} className="file-name">
+                  {file.name}
+                  <span className="remove-file" onClick={() => handleRemoveAttachment(index)}> ✖ </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-
         <div className="form-buttons">
           <button type="button" className="btn btn-secondary back-btn" onClick={onBack}>← Back</button>
           <button type="submit" className="btn btn-success submit-btn" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>

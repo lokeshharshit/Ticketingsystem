@@ -1,7 +1,9 @@
-/* Main Form Container */
+/* ========================= */
+/* General Form Styling */
+/* ========================= */
 .add-form-container {
   margin: 0 auto;
-  padding: 40px;
+  padding: 30px;
   width: 90%;
   max-width: 800px;
   background: #fff;
@@ -13,17 +15,16 @@
 .form-title {
   text-align: center;
   color: #333;
-  margin-bottom: 25px;
-  font-size: 26px;
+  margin-bottom: 20px;
+  font-size: 24px;
   font-weight: bold;
 }
 
-/* Form Group */
+/* Form Fields */
 .form-group {
   margin-bottom: 20px;
 }
 
-/* Form Label */
 .form-label {
   font-weight: bold;
   color: #555;
@@ -31,92 +32,90 @@
   margin-bottom: 8px;
 }
 
-/* Input Fields */
 .form-control {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
   background-color: #fdfdfd;
 }
 
-/* Textarea */
+/* Textarea Styling */
 textarea.form-control {
-  height: 150px;
+  height: 120px;
 }
 
-/* 📌 File Input Container */
+/* ========================= */
+/* File Upload Styling */
+/* ========================= */
+
+.file-input-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #fdfdfd;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.custom-file-input {
+  padding: 8px 12px;
+  background-color: #808080;
+  color: black;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  display: inline-block;
+  text-align: left;
+}
+
+.file-input-default {
+  display: none;
+}
+
+.selected-files {
+  margin-top: 10px;
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+
+
+.file-name {
+  display: flex;
+  align-items: center;
+  background: #e0e0e0;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  max-width: 100%;
+}
+
+.remove-file {
+  cursor: pointer;
+  color: red;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
 .file-input-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px;
-  background-color: #fdfdfd;
-  min-height: 45px;
-  position: relative;
   width: 100%;
 }
 
-/* Custom File Input Button */
-.custom-file-input {
-  display: inline-block;
-  padding: 10px 15px;
-  color: rgb(0, 0, 0);
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.3s;
-}
-
-
-/* Hidden File Input */
-.file-input-container input[type="file"] {
-  display: none;
-}
-
-/* Selected Files Display */
-.selected-files {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 14px;
-  color: #333;
-  overflow-x: auto;
-  width: 100%;
-}
-
-/* Individual File Name */
-.file-name {
-  display: flex;
-  align-items: center;
-  background: #f1f1f1;
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 5px;
-  white-space: nowrap;
-  margin-right: 5px;
-}
-
-/* Remove File Button (Just an "X", no border or background) */
-.remove-file {
-  cursor: pointer;
-  color: red;
-  font-size: 14px;
-  margin-left: 6px;
-  background: none;
-  padding: 0;
-}
-
-.remove-file:hover {
-  color: darkred;
-}
-
+/* ========================= */
 /* Buttons */
+/* ========================= */
 .form-buttons {
   display: flex;
   justify-content: space-between;
@@ -132,56 +131,25 @@ textarea.form-control {
   text-align: center;
 }
 
-/* Submit Button */
 .submit-btn {
   background-color: #28a745;
   color: white;
-  border: none;
-}
-
-.submit-btn:hover {
-  background-color: #218838;
-}
-
-/* Back Button */
-.back-btn {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-}
-
-.back-btn:hover {
-  background-color: #5a6268;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .add-form-container {
-    width: 95%;
-    padding: 20px;
-  }
-
-  .form-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .btn {
-    width: 100%;
-  }
-}
-
-.file-input-default {
-  all: unset; /* Resets all styles */
-}
-
-.file-input-default::-webkit-file-upload-button {
-  all: unset;
-}
-
-.file-input-default {
-  font-family: inherit;
-  font-size: inherit;
   cursor: pointer;
 }
 
+.submit-btn:disabled {
+  background-color: #ccc;
+}
+
+.back-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Error/Success Message */
+.message {
+  color: #f44336;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 15px;
+}
