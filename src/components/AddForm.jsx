@@ -1,126 +1,159 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "../styles/addForm.css";
 
 const AddForm = ({ category, onBack, user }) => {
   const [formData, setFormData] = useState({
-    requestorName: user?.username || "",
-    summary: "",
-    details: "",
-    attachments: null,
-    priority: "Low",
+    description: "",
+    comments: "",
+    attachment: null,
   });
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const apiUrl = "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/ticketsystrigger";
+  const sasToken = "sv=2024-11-04&ss=bfqt&srt=co&sp=rwdlacupiyx&se=2025-04-20T15:28:36Z&st=2025-03-19T07:28:36Z&spr=https,http&sig=G2q4%2BGr3XGUGKb%2Ba0FL9C5MhlEtlv8Z%2BOn2hrIJPVdA%3D";
+  const blobStorageUrl = "https://ticketingsystemfctickets.blob.core.windows.net/ticketingsystemfccontainer";
+
+  const handleFileChange = (e) => {
+    const { files } = e.target;
+    if (files.length > 0) {
+      setFormData({ ...formData, attachment: files[0] });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleRemoveAttachment = () => {
+    setFormData({ ...formData, attachment: null });
+    document.getElementById("fileInput").value = "";
+  };
+
+  const handleFileUpload = async (file) => {
+    if (!file) return null;
+
+    const blobName = `${Date.now()}-${file.name}`;
+    const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
+
+    try {
+      const response = await axios.put(uploadUrl, file, {
+        headers: {
+          "x-ms-blob-type": "BlockBlob",
+          "Content-Type": file.type,
+        },
+      });
+
+      if (response.status === 201) {
+        return `${blobStorageUrl}/${blobName}?${sasToken}`;
+      } else {
+        throw new Error("File upload failed");
+      }
+    } catch (error) {
+      console.error("Blob Upload Error:", error);
+      return null;
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
+    setLoading(true);
+    setMessage("");
+
+    if (!formData.comments.trim() || !formData.description.trim()) {
+      setMessage("Please fill in all mandatory fields.");
+      setLoading(false);
+      return;
+    }
+
+    let attachmentUrl = null;
+    if (formData.attachment) {
+      attachmentUrl = await handleFileUpload(formData.attachment);
+    }
+
+    const ticketData = {
+      UserId: user?.UserId,
+      AdminId: 1,
+      Description: formData.description,
+      Status: "Open",
+      Comments: formData.comments,
+      Attachment: attachmentUrl,
+    };
+
+    try {
+      const response = await axios.post(apiUrl, ticketData, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        setMessage("Ticket submitted successfully!");
+        setFormData({ description: "", comments: "", attachment: null });
+      }
+    } catch (error) {
+      setMessage("Failed to submit ticket. Please check API request.");
+      console.error("API Error:", error.response ? error.response.data : error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="add-form-container">
-      {/* <h2 className="form-title">Account Unlock / Password Reset</h2> */}
       <h3 className="form-title">
         {category ? `${category} Request Form` : "Request Form"}
       </h3>
-      <p className="form-subtitle">
-        Click here to request account unlocks or password resets.
-      </p>
-      <p className="mandatory-notice">* denotes a mandatory field</p>
+
+      {message && <p className="message">{message}</p>}
 
       <form onSubmit={handleSubmit}>
-       {/* Requestor Name with Profile */}
-<div className="form-group">
-  <label className="form-label">Requestor *</label>
-        <div className="requestor-container">
-            {/* Profile Icon with User's Initial */}
-            <div className="requestor-icon">
-            {user?.username?.charAt(0).toUpperCase()}
-            </div>
-
-            {/* User Information */}
-            <div>
-                <div className="requestor-text">
-                    {user?.UserName?.toUpperCase() || "N/A"} (WinWire)
-                </div>
-                <div className="requestor-info">
-                    WinWire Employee - Full Time
-                </div>
-                </div>
-            </div>
+        <div className="form-group">
+          <label className="form-label">Requestor *</label>
+          <input type="text" value={user?.UserName || "N/A"} disabled className="form-control" />
         </div>
 
-        {/* Summary */}
         <div className="form-group">
           <label className="form-label">Summary *</label>
           <input
             type="text"
-            name="summary"
+            name="comments"
             className="form-control"
             placeholder="Enter summary"
-            value={formData.summary}
-            onChange={handleChange}
+            value={formData.comments}
+            onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+            required
           />
         </div>
 
-        {/* Details */}
         <div className="form-group">
           <label className="form-label">Details *</label>
           <textarea
-            name="details"
+            name="description"
             className="form-control"
             rows="4"
             placeholder="Enter detailed description..."
-            value={formData.details}
-            onChange={handleChange}
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            required
           />
         </div>
 
-        {/* Attachments */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
-          <input
-            type="file"
-            name="attachments"
-            className="form-control file-input"
-            onChange={handleChange}
-          />
+          <div className="file-input-container">
+            <input
+              type="file"
+              id="fileInput"
+              name="attachment"
+              className="form-control file-input"
+              onChange={handleFileChange}
+            />
+            {formData.attachment && (
+              <span className="remove-file" onClick={handleRemoveAttachment}>❌</span>
+            )}
+          </div>
         </div>
 
-        {/* Priority Type */}
-        <div className="form-group">
-          <label className="form-label">Priority</label>
-          <select
-            name="priority"
-            className="form-control"
-            value={formData.priority}
-            onChange={handleChange}
-          >
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Urgent">Urgent</option>
-          </select>
-        </div>
-
-        {/* Buttons: Submit & Back */}
         <div className="form-buttons">
-          <button
-            type="button"
-            className="btn btn-secondary back-btn"
-            onClick={onBack}
-          >
-            ← Back
-          </button>
-          <button type="submit" className="btn btn-success submit-btn">
-            Submit
-          </button>
+          <button type="button" className="btn btn-secondary back-btn" onClick={onBack}>← Back</button>
+          <button type="submit" className="btn btn-success submit-btn" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
         </div>
       </form>
     </div>
