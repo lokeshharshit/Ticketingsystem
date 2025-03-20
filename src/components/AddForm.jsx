@@ -27,6 +27,27 @@ const AddForm = ({ category, onBack, user }) => {
     setFormData({ ...formData, attachments: updatedFiles });
   };
 
+  const uploadFilesToAzure = async (files) => {
+    let uploadedUrls = [];
+    for (const file of files) {
+      const blobName = `${Date.now()}-${file.name}`;
+      const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
+      try {
+        await axios.put(uploadUrl, file, {
+          headers: {
+            "x-ms-blob-type": "BlockBlob",
+            "Content-Type": file.type,
+          },
+        });
+        uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
+      } catch (error) {
+        console.error("File upload failed", error);
+        throw new Error("File upload failed");
+      }
+    }
+    return uploadedUrls;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -38,9 +59,15 @@ const AddForm = ({ category, onBack, user }) => {
       return;
     }
 
-    let attachmentUrls = null; // Placeholder for file URLs
+    let attachmentUrls = [];
     if (formData.attachments.length > 0) {
-      attachmentUrls = formData.attachments.map((file) => URL.createObjectURL(file)).join(";");
+      try {
+        attachmentUrls = await uploadFilesToAzure(formData.attachments);
+      } catch (error) {
+        setMessage("Failed to upload files. Please try again.");
+        setLoading(false);
+        return;
+      }
     }
 
     const ticketData = {
@@ -49,7 +76,7 @@ const AddForm = ({ category, onBack, user }) => {
       Description: formData.description,
       Status: "Open",
       Comments: formData.comments,
-      Attachment: attachmentUrls,
+      Attachment: attachmentUrls.join(";"),
     };
 
     try {
@@ -73,7 +100,6 @@ const AddForm = ({ category, onBack, user }) => {
       {message && <p className="message">{message}</p>}
       
       <form onSubmit={handleSubmit}>
-        {/* Requestor Field */}
         <div className="form-group">
           <label className="form-label">Requestor *</label>
           <div className="requestor-container">
@@ -85,7 +111,6 @@ const AddForm = ({ category, onBack, user }) => {
           </div>
         </div>
 
-        {/* Summary */}
         <div className="form-group">
           <label className="form-label">Summary *</label>
           <input
@@ -99,7 +124,6 @@ const AddForm = ({ category, onBack, user }) => {
           />
         </div>
 
-        {/* Details */}
         <div className="form-group">
           <label className="form-label">Details *</label>
           <textarea
@@ -113,7 +137,6 @@ const AddForm = ({ category, onBack, user }) => {
           />
         </div>
 
-        {/* Attachments - Styled Like a Form Input */}
         <div className="form-group">
           <label className="form-label">Attachments</label>
           <div className="file-upload-box">
@@ -131,7 +154,6 @@ const AddForm = ({ category, onBack, user }) => {
           )}
         </div>
 
-        {/* Buttons */}
         <div className="form-buttons">
           <button type="button" className="btn btn-secondary back-btn" onClick={onBack}>← Back</button>
           <button type="submit" className="btn btn-success submit-btn" disabled={loading}>{loading ? "Submitting..." : "Submit"}</button>
