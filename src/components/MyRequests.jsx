@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/myRequests.css";
 
@@ -6,6 +7,14 @@ const MyRequests = ({ user }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Initialize navigate hook
+
+  // Static Admin Mapping (Replace this with API call if needed)
+  const adminMapping = {
+    1: "John Doe",
+    2: "Jane Smith",
+    3: "Michael Brown",
+  };
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -24,8 +33,24 @@ const MyRequests = ({ user }) => {
     if (user) fetchTickets();
   }, [user]);
 
+  // Function to extract file names from multiple attachment URLs
+  const extractFileNames = (attachments) => {
+    if (!attachments) return "No Attachment";
+
+    const filesArray = Array.isArray(attachments) ? attachments : attachments.split(";");
+
+    return filesArray
+      .map((url) => {
+        const filename = url.split("/").pop(); // Get the last part of URL
+        return filename.replace(/^\d+-/, ""); // Remove timestamp prefix
+      })
+      .join(", ");
+  };
+
   return (
     <div className="my-requests-container">
+      <button className="back-button" onClick={() => navigate(-1)}>← Back</button> {/* Back button */}
+      
       <h2>My Requests</h2>
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
@@ -34,7 +59,14 @@ const MyRequests = ({ user }) => {
         {tickets.map((ticket) => (
           <li key={ticket.TicketId} className="ticket-item">
             <strong>ID:</strong> {ticket.TicketId} | <strong>Status:</strong> {ticket.Status}
+            {ticket.AdminId && (
+              <p><strong>Assigned Admin:</strong> {adminMapping[ticket.AdminId] || "Unknown Admin"}</p>
+            )}
+            <p><strong>Description:</strong></p>
             <p>{ticket.Description}</p>
+            {ticket.Attachment && (
+              <p><strong>Attachments:</strong> {extractFileNames(ticket.Attachment)}</p>
+            )}
           </li>
         ))}
       </ul>
