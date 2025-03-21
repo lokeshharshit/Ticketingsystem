@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import '../styles/Header.css';
+import { Link } from "react-router-dom";
+import "../styles/Header.css";
 
 const Header = ({ user, onLogout }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -12,7 +13,10 @@ const Header = ({ user, onLogout }) => {
         <ul className="nav-list">
           {user ? (
             <>
-              <li 
+              <li className="nav-item">
+                <Link className="nav-link" to="/my-requests">My Requests</Link>
+              </li>
+              <li
                 className="nav-item profile-container"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}

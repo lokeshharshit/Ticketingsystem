@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/login.css"; // Updated path after moving files
 import axios from "axios";
+import "../../styles/login.css";
 
 const Login = ({ onLogin, setShowForgotPassword }) => {
   const [username, setUsername] = useState("");
@@ -25,7 +25,7 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
 
     try {
       const apiUrl =
-        "https://ticketingsystemfc.azurewebsites.net/api/httptriggers?code=UV31N1uFcYsbPgouZlJSfd3xDpgZNVw8nUH3j9-1wm8AAzFus1tvrg%3D%3D";
+        "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/HttpTriggers";
 
       const response = await axios.post(apiUrl, {
         UserName: username,
@@ -34,6 +34,7 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
       });
 
       if (response.status === 200) {
+        localStorage.setItem("user", JSON.stringify(response.data)); // Save user in localStorage
         onLogin(response.data);
       }
     } catch (err) {
