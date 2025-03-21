@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/login.css"; // Updated path after moving files
 import axios from "axios";
+import "../../styles/login.css";
 
 const Login = ({ onLogin, setShowForgotPassword }) => {
   const [username, setUsername] = useState("");
@@ -34,6 +34,7 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
       });
 
       if (response.status === 200) {
+        localStorage.setItem("user", JSON.stringify(response.data)); // Save user in localStorage
         onLogin(response.data);
       }
     } catch (err) {
