@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { uploadFilesToAzure, submitTicket } from "../api/ticketService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/addForm.css";
@@ -14,46 +14,26 @@ const AddForm = ({ category, onBack, user }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const apiUrl = "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/ticketsystrigger";
-  const sasToken = "sv=2024-11-04&ss=bfqt&srt=co&sp=rwdlacupiyx&se=2025-04-20T15:28:36Z&st=2025-03-19T07:28:36Z&spr=https,http&sig=G2q4%2BGr3XGUGKb%2Ba0FL9C5MhlEtlv8Z%2BOn2hrIJPVdA%3D";
-  const blobStorageUrl = "https://ticketingsystemfctickets.blob.core.windows.net/ticketingsystemfccontainer";
-
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
-    setFormData({ ...formData, attachments: [...formData.attachments, ...newFiles] });
+
+    // Prevent duplicate file selection
+    const uniqueFiles = newFiles.filter(
+      (file) => !formData.attachments.some((existing) => existing.name === file.name)
+    );
+
+    if (uniqueFiles.length < newFiles.length) {
+      toast.warn("Some files are already selected.");
+    }
+
+    setFormData({ ...formData, attachments: [...formData.attachments, ...uniqueFiles] });
   };
 
   const handleRemoveAttachment = (index) => {
-    const updatedFiles = [...formData.attachments];
-    updatedFiles.splice(index, 1);
-    setFormData({ ...formData, attachments: updatedFiles });
-  };
-
-  const uploadFilesToAzure = async () => {
-    if (formData.attachments.length === 0) return null; // Return null if no files are attached
-
-    let uploadedUrls = [];
-    for (const file of formData.attachments) {
-      const blobName = `${Date.now()}-${file.name}`;
-      const uploadUrl = `${blobStorageUrl}/${blobName}?${sasToken}`;
-
-      try {
-        await axios.put(uploadUrl, file, {
-          headers: {
-            "x-ms-blob-type": "BlockBlob",
-            "Content-Type": file.type,
-          },
-        });
-
-        uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
-      } catch (error) {
-        console.error("File upload failed:", error);
-        toast.error("File upload failed.");
-        return null;
-      }
-    }
-
-    return uploadedUrls.length > 0 ? uploadedUrls.join(";") : null;
+    setFormData((prevState) => ({
+      ...prevState,
+      attachments: prevState.attachments.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -69,7 +49,7 @@ const AddForm = ({ category, onBack, user }) => {
     }
 
     try {
-      let attachmentUrls = await uploadFilesToAzure();
+      let attachmentUrls = await uploadFilesToAzure(formData.attachments);
 
       const ticketData = {
         UserId: user?.UserId,
@@ -80,18 +60,11 @@ const AddForm = ({ category, onBack, user }) => {
         Attachment: attachmentUrls,
       };
 
-      const response = await axios.post(apiUrl, ticketData, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (response.status >= 200 && response.status < 300) {
-        setMessage("Ticket submitted successfully!");
-        toast.success("Ticket submitted successfully!");
-        setFormData({ description: "", comments: "", attachments: [] });
-      }
+      await submitTicket(ticketData);
+      toast.success("Ticket submitted successfully!");
+      setFormData({ description: "", comments: "", attachments: [] });
     } catch (error) {
-      setMessage("Failed to submit ticket. Please check API request.");
-      toast.error("Failed to submit ticket. Please check API request.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
