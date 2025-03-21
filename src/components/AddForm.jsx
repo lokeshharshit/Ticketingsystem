@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/addForm.css";
 
 const AddForm = ({ category, onBack, user }) => {
@@ -46,7 +48,8 @@ const AddForm = ({ category, onBack, user }) => {
         uploadedUrls.push(`${blobStorageUrl}/${blobName}`);
       } catch (error) {
         console.error("File upload failed:", error);
-        throw new Error("File upload failed");
+        toast.error("File upload failed.");
+        return null;
       }
     }
 
@@ -60,6 +63,7 @@ const AddForm = ({ category, onBack, user }) => {
 
     if (!formData.comments.trim() || !formData.description.trim()) {
       setMessage("Please fill in all mandatory fields.");
+      toast.error("Please fill in all mandatory fields.");
       setLoading(false);
       return;
     }
@@ -73,7 +77,7 @@ const AddForm = ({ category, onBack, user }) => {
         Description: formData.description,
         Status: "Open",
         Comments: formData.comments,
-        Attachment: attachmentUrls, // Pass null if no files are uploaded
+        Attachment: attachmentUrls,
       };
 
       const response = await axios.post(apiUrl, ticketData, {
@@ -82,10 +86,12 @@ const AddForm = ({ category, onBack, user }) => {
 
       if (response.status >= 200 && response.status < 300) {
         setMessage("Ticket submitted successfully!");
+        toast.success("Ticket submitted successfully!");
         setFormData({ description: "", comments: "", attachments: [] });
       }
     } catch (error) {
       setMessage("Failed to submit ticket. Please check API request.");
+      toast.error("Failed to submit ticket. Please check API request.");
     } finally {
       setLoading(false);
     }
@@ -93,6 +99,7 @@ const AddForm = ({ category, onBack, user }) => {
 
   return (
     <div className="add-form-container">
+      <ToastContainer />
       <h3 className="form-title">{category ? `${category} Request Form` : "Request Form"}</h3>
       {message && <p className="message">{message}</p>}
 
