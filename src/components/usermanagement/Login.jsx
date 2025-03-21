@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../../styles/login.css";
 
 const Login = ({ onLogin, setShowForgotPassword }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.classList.add("login-page");
@@ -24,8 +26,9 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
     }
 
     try {
-      const apiUrl =
-        "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/HttpTriggers";
+      const apiUrl = "https://ticketfunctionrbac-apim.azure-api.net/ticketingsystemfc/HttpTriggers";
+
+      console.log("🔄 Sending login request to API...");
 
       const response = await axios.post(apiUrl, {
         UserName: username,
@@ -33,31 +36,42 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
         Login: true,
       });
 
-      if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.data)); // Save user in localStorage
-        onLogin(response.data);
-      }
-    } catch (err) {
-      if (err.response) {
-        if (err.response.status === 401) {
-          setError("Invalid password");
-        } else if (err.response.status === 404) {
-          setError("User not found");
+      if (response.status === 200 && response.data) {
+        const userData = response.data;
+
+        // console.log("🟢 Extracted User Data:", userData); // ✅ Log extracted user data
+
+        if (!userData.RoleId) {
+          console.error("⚠️ RoleId is missing in API response!");
+          setError("RoleId is missing in API response. Contact support.");
+          return;
+        }
+
+        localStorage.setItem("user", JSON.stringify(userData)); // Save user data
+        onLogin(userData);
+
+        console.log("🔀 Redirecting based on RoleId...");
+        if (userData.RoleId === 1) {
+          console.log("👑 Admin detected. Navigating to /admin-dashboard");
+          navigate("/admin-dashboard");
         } else {
-          setError("Server error. Please try again.");
+          console.log("👤 Regular user detected. Navigating to /");
+          navigate("/");
         }
       } else {
-        setError("Error connecting to the server");
+        console.error("❌ Invalid response from server:", response);
+        setError("Invalid response from server.");
       }
+    } catch (err) {
+      console.error("❌ Login Error:", err);
+      setError("Invalid credentials or server error.");
     }
   };
 
   return (
     <main>
       <div className="login-container">
-        <h3>
-          <b>Login</b>
-        </h3>
+        <h3><b>Login</b></h3>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
@@ -88,9 +102,7 @@ const Login = ({ onLogin, setShowForgotPassword }) => {
               Forgot Password?
             </a>
           </div>
-          <button type="submit" className="login-button">
-            Login
-          </button>
+          <button type="submit" className="login-button">Login</button>
         </form>
       </div>
     </main>

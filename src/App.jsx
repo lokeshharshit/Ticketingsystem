@@ -8,6 +8,7 @@ import Dashboard from "./components/Dashboard";
 import ServiceCategories from "./components/ServiceCategories";
 import AddForm from "./components/AddForm";
 import MyRequests from "./components/MyRequests";
+import AdminDashboard from "./components/AdminDashboard";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -33,6 +34,16 @@ const App = () => {
     setUser(null);
   };
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Loaded user from storage:", parsedUser);
+      setUser(parsedUser);
+    }
+  }, []);
+  
+
   return (
     <Router>
       <div>
@@ -50,10 +61,19 @@ const App = () => {
             ) : (
               <Route
                 path="/"
-                element={user ? <Dashboard user={user} /> : <Login onLogin={handleLogin} setShowForgotPassword={setShowForgotPassword} />}
+                element={
+                  user ? (
+                    user.RoleId === 1 ? (
+                      <Navigate to="/admin-dashboard" />
+                    ) : (
+                      <Dashboard user={user} />
+                    )
+                  ) : (
+                    <Login onLogin={handleLogin} setShowForgotPassword={setShowForgotPassword} />
+                  )
+                }
               />
             )}
-
 
             <Route path="/forgot-password" element={<ForgotPassword setShowForgotPassword={setShowForgotPassword} />} />
 
@@ -65,6 +85,9 @@ const App = () => {
 
             {/* AddForm */}
             <Route path="/add/:category" element={user ? <AddForm user={user} /> : <Navigate to="/" />} />
+
+            {/* Admin Dashboard - Accessible only to Admins */}
+            <Route path="/admin-dashboard" element={user?.RoleId === 1 ? <AdminDashboard /> : <Navigate to="/" />} />
           </Routes>
         </main>
 
