@@ -27,6 +27,9 @@ const AddForm = ({ category, onBack, user }) => {
     }
 
     setFormData({ ...formData, attachments: [...formData.attachments, ...uniqueFiles] });
+
+    // Reset file input to allow re-uploading the same file
+    e.target.value = "";
   };
 
   const handleRemoveAttachment = (index) => {
